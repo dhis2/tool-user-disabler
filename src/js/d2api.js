@@ -1,4 +1,4 @@
-const dhisDevConfig = DHIS_CONFIG;  
+const dhisDevConfig = DHIS_CONFIG;
 const isDev = "baseUrl" in dhisDevConfig;
 const baseUrl = isDev ? dhisDevConfig.baseUrl : "../../..";
 
@@ -35,7 +35,17 @@ const validateUID = (endpoint) => {
 };
 
 
-//GET from API async
+// Helper function to handle API errors and throw detailed error messages
+const handleApiError = async (response) => {
+    let errorMessage = "Network response was not ok";
+    let errorDetail = await response.json(); // Capture the error response body text
+
+    errorMessage = errorDetail.message || errorMessage;
+
+    throw new Error(`${response.statusText} - ${errorMessage}`);
+};
+
+// GET from API async
 export const d2Get = async (endpoint) => {
     try {
         endpoint = formatEndpoint(endpoint);
@@ -45,7 +55,7 @@ export const d2Get = async (endpoint) => {
             headers: headers
         });
         if (!response.ok) {
-            throw new Error("Network response was not ok " + response.statusText);
+            await handleApiError(response); // Handle the error response
         }
         let data = await response.json();
         return data;
@@ -56,7 +66,7 @@ export const d2Get = async (endpoint) => {
     }
 };
 
-//POST to API async
+// POST to API async
 export const d2PostJson = async (endpoint, body) => {
     try {
         endpoint = formatEndpoint(endpoint);
@@ -68,7 +78,7 @@ export const d2PostJson = async (endpoint, body) => {
             body: JSON.stringify(body)
         });
         if (!response.ok) {
-            throw new Error("Network response was not ok " + response.statusText);
+            await handleApiError(response); // Handle the error response
         }
         let data = await response.json();
         return data;
@@ -96,12 +106,37 @@ export const d2PutJson = async (endpoint, body) => {
             body: JSON.stringify(body)
         });
         if (!response.ok) {
-            throw new Error("Network response was not ok " + response.statusText);
+            await handleApiError(response); // Handle the error response
         }
         let data = await response.json();
         return data;
     } catch (error) {
         console.log("ERROR in PUT:");
+        console.log(error);
+        throw error;
+    }
+};
+
+// DELETE from API async
+export const d2Delete = async (endpoint) => {
+    try {
+        endpoint = formatEndpoint(endpoint);
+
+        if (!validateUID(endpoint)) {
+            console.warn("Warning: The endpoint does not end with a valid 11-character UID");
+        }
+
+        let headers = getHeaders();
+        let response = await fetch(baseUrl + endpoint, {
+            method: "DELETE",
+            headers: headers
+        });
+        if (!response.ok) {
+            await handleApiError(response); // Handle the error response
+        }
+        return { status: "success" };
+    } catch (error) {
+        console.log("ERROR in DELETE:");
         console.log(error);
         throw error;
     }

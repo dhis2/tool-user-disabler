@@ -1,0 +1,205 @@
+/* Ensure font-family for FontAwesome */
+.fa,
+.fas {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+thead input,
+thead select {
+    width: 100%;
+    padding: 4px;
+    box-sizing: border-box;
+    font-size: 12px;
+}
+
+/* Style for buttons */
+.dhis2-button {
+    background-color: #00796B;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    /* Rounded corners */
+}
+
+/* Disabled button style */
+.dhis2-button[disabled] {
+    background-color: #BDBDBD;
+    /* Light grey background */
+    color: #757575;
+    /* Darker grey text for better contrast */
+    cursor: not-allowed;
+    /* Not-allowed cursor to indicate action is disabled */
+    opacity: 0.6;
+    /* Reduced opacity for a disabled effect */
+}
+
+.dhis2-button.red {
+    background-color: #d9534f;
+    color: white;
+}
+
+.dhis2-button.blue {
+    background-color: #0275d8;
+    color: white;
+}
+
+.dhis2-button:hover {
+    background-color: #00695C;
+}
+
+.dhis2-button.red:hover {
+    background-color: #c12727;
+}
+
+/* Compact table styling */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+    margin: 0;
+    padding: 5px;
+}
+
+.dataTables_wrapper .dataTables_length select,
+.dataTables_wrapper .dataTables_filter input {
+    border: 1px solid #ccc;
+    padding: 4px;
+    margin-left: 8px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #333;
+    margin: 0 2px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background-color: #00796B;
+    color: white;
+}
+
+.dataTables_filter {
+    display: none !important;
+}
+
+/* Actions buttons styling */
+.actions-buttons {
+    display: flex;
+    gap: 4px;
+}
+
+.actions-buttons .dhis2-button {
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+
+.filter-wrapper {
+    margin-bottom: 16px;
+}
+
+.filter-wrapper label {
+    margin-right: 8px;
+}
+
+.filter-wrapper select,
+.filter-wrapper input {
+    margin-right: 8px;
+    padding: 4px;
+    font-size: 14px;
+}
+
+
+.close-summary {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-summary:hover,
+.close-summary:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#closeSummaryBtn {
+    background-color: #00796B;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin-top: 15px;
+    cursor: pointer;
+}
+
+.result-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.result-table,
+.result-table th,
+.result-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.result-table th {
+    background-color: #f2f2f2;
+    text-align: left;
+}
+
+.result-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.result-table tr:hover {
+    background-color: #ddd;
+}

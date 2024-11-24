@@ -4,6 +4,8 @@
 
 <head>
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+    <title>Inactive User Management</title>
+
 </head>
 
 <body>
@@ -31,9 +33,84 @@
     </div>
 
     <div class="mainView">
-        <p>Content goes here...</p>
+        <div class="filter-wrapper">
+            <label for="periodType">Period inactive</label>
+            <select id="periodType">
+                <option value="months">Months</option>
+                <option value="years">Years</option>
+                <option value="date">Since date</option>
+            </select>
 
-        <button onclick="helloWorld()">Hello</button>
+            <input type="number" id="numPeriods" min="1" value="6" style="display: inline-block;">
+            <input type="date" id="specificDate" style="display: none;">
+
+            <label for="includeNeverLoggedIn">
+                <input type="checkbox" id="includeNeverLoggedIn"> Include users who never logged in
+            </label>
+
+            <button id="applyFilterBtn" class="dhis2-button blue">Apply Filter</button>
+        </div>
+
+        <table id="usersTable" class="display compact nowrap order-column">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="select-all"></th>
+                    <th>Username</th>
+                    <th>First Name</th>
+                    <th>Surname</th>
+                    <th>Disabled</th>
+                    <th>Created</th>
+                    <th>Last Login</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Filled dynamically by JS -->
+            </tbody>
+        </table>
+        <button id="bulkDisableBtn" class="dhis2-button red">Bulk Disable</button>
+        <div id="user-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="userInfo">
+                    <!-- Filled dynamically by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div id="summaryModal" class="modal">
+            <div class="modal-content">
+                <span class="close-summary">&times;</span>
+                <div id="summaryContent">
+                    <!-- Filled dynamically by JS -->
+                </div>
+                <button id="closeSummaryBtn">Close</button>
+            </div>
+        </div>
+
+        <!-- Confirmation modal for bulk disabling -->
+        <div id="confirmationModal" class="modal">
+            <div class="modal-content">
+                <span class="close-confirm">&times;</span>
+                <div id="confirmationContent">
+                    <!-- Confirmation info will be displayed here -->
+                </div>
+                <button id="confirmBulkDisableBtn" class="dhis2-button red">Confirm</button>
+                <button id="cancelBulkDisableBtn" class="dhis2-button">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Progress modal for showing status updates during bulk operations -->
+        <div id="progressModal" class="modal">
+            <div class="modal-content">
+                <span class="close-progress">&times;</span>
+                <div id="progressContent">
+                    <!-- Progress updates will be displayed here -->
+                </div>
+                <button id="closeProgressBtn" class="dhis2-button">Close</button>
+            </div>
+        </div>
+
     </div>
 </body>
 

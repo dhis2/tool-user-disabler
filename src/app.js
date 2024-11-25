@@ -51,7 +51,6 @@ const fetchAndDisplayUsers = async () => {
             users = users.concat(neverLoggedInResponse.users);
         }
 
-        console.log(users.length);
         populateUsersTable(users);
     } catch (error) {
         console.error("Error fetching users: ", error);
@@ -353,6 +352,10 @@ const showSummaryModal = (successCount, failures) => {
 };
 
 window.disableUser = async (userId) => {
+    const singleUserModal = document.getElementById("singleUserModal");
+    const singleUserModalContent = document.getElementById("singleUserModalContent");
+    const closeSingleUserSpan = document.getElementsByClassName("close-single-user")[0];
+
     try {
         const userResponse = await d2Get(`/api/users/${userId}.json?fields=:owner`);
         const user = userResponse;
@@ -364,12 +367,46 @@ window.disableUser = async (userId) => {
         const row = $(`tr[data-id='${userId}']`);
         row.find("td").eq(4).html("Yes");
 
+        // Update disable button status
+        row.find("button:contains('Disable')").prop("disabled", true);
+        row.find("input[type='checkbox']").prop("disabled", true);
+
+        // Show success message
+        singleUserModalContent.innerHTML = `<p>User ${user.username} has been successfully disabled.</p>`;
+        singleUserModal.style.display = "block";
+
+        closeSingleUserSpan.onclick = () => {
+            singleUserModal.style.display = "none";
+        };
+
+        window.onclick = (event) => {
+            if (event.target === singleUserModal) {
+                singleUserModal.style.display = "none";
+            }
+        };
+
         return { userId, status: "success" };
     } catch (error) {
-        const errorMessage = error;
+        const errorMessage = error.message;
+
+        // Show error message
+        singleUserModalContent.innerHTML = `<p>Failed to disable user. Error: ${errorMessage}</p>`;
+        singleUserModal.style.display = "block";
+
+        closeSingleUserSpan.onclick = () => {
+            singleUserModal.style.display = "none";
+        };
+
+        window.onclick = (event) => {
+            if (event.target === singleUserModal) {
+                singleUserModal.style.display = "none";
+            }
+        };
+
         return { userId, status: "error", message: errorMessage };
     }
 };
+
 
 
 

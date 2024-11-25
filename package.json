@@ -1,6 +1,6 @@
 {
-  "name": "dhis2_webapp_template",
-  "description": "Template for basic DHIS2 webapps",
+  "name": "user-disabler",
+  "description": "App to quickly find and disable inactive users.",
   "version": "0.1.0",
   "dependencies": {
     "datatables.net": "^2.1.8",
@@ -39,14 +39,14 @@
   "manifest.webapp": {
     "developer": {
       "company": "HISP Centre - Univeristy of Oslo",
-      "email": "dev@dhis2.org",
+      "email": "olav@dhis2.org",
       "name": "HISP Centre"
     },
     "icons": {
       "48": "img/icons/app_logo_48x48.png",
       "96": "img/icons/app_logo_96x96.png"
     },
-    "name": "DHIS2 Skeleton App for Dummies",
+    "name": "User Disabler",
     "version": "0.1.0",
     "appType": "APP"
   }

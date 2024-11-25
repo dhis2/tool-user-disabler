@@ -21,14 +21,19 @@ const fetchAndDisplayUsers = async () => {
     try {
         const inactiveDate = getInactiveDate();
         const includeNeverLoggedIn = $("#includeNeverLoggedIn").is(":checked");
+        const includeDisabledUsers = $("#includeDisabledUsers").is(":checked");
 
         let filterCondition = "";
 
         if (inactiveDate) {
-            filterCondition = `lastLogin:lt:${inactiveDate}`;
+            filterCondition += `lastLogin:lt:${inactiveDate}`;
         }
 
-        // Fetch users based on inactive period
+        if (!includeDisabledUsers) {
+            filterCondition += `${filterCondition ? '&' : ''}&filter=disabled:eq:false`;
+        }
+
+        // Fetch users based on inactive period and disabled status
         const apiUrl = `/api/users.json?fields=id,username,firstName,surname,disabled,created,lastLogin&paging=false${filterCondition ? `&filter=${filterCondition}` : ""}`;
         const response = await d2Get(apiUrl);
 
@@ -36,7 +41,13 @@ const fetchAndDisplayUsers = async () => {
 
         // Fetch users who never logged in and merge with the existing users
         if (includeNeverLoggedIn) {
-            const neverLoggedInResponse = await d2Get("/api/users.json?fields=id,username,firstName,surname,disabled,created,lastLogin&paging=false&filter=lastLogin:null");
+            if (!includeDisabledUsers) {
+                filterCondition = "&filter=lastLogin:null&filter=disabled:eq:false";
+            }
+            else {
+                filterCondition = "&filter=lastLogin:null";
+            }
+            const neverLoggedInResponse = await d2Get("/api/users.json?fields=id,username,firstName,surname,disabled,created,lastLogin&paging=false" +  filterCondition);
             users = users.concat(neverLoggedInResponse.users);
         }
 
@@ -46,6 +57,7 @@ const fetchAndDisplayUsers = async () => {
         console.error("Error fetching users: ", error);
     }
 };
+
 
 
 const populateUsersTable = (users) => {
@@ -209,7 +221,7 @@ const setupEventListeners = () => {
     // Select all functionality - applying to all rows across all pages
     $("#select-all").on("click", function () {
         const checked = this.checked;
-        table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+        table.rows().every(function () {
             $(this.node()).find("input[type='checkbox']").prop("checked", checked);
         });
         updateBulkDisableButtonState();
@@ -218,7 +230,7 @@ const setupEventListeners = () => {
     // Function to update the state of the bulk disable button
     const updateBulkDisableButtonState = () => {
         const selectedEnabledUserIds = [];
-        table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+        table.rows().every(function () {
             const rowNode = this.node();
             const isChecked = $(rowNode).find(".user-select").prop("checked");
             const isDisabled = $(rowNode).find(".user-select").prop("disabled");
@@ -256,7 +268,7 @@ const updateBulkDisableButtonState = () => {
 
 const showBulkDisableConfirmation = () => {
     const selectedUserIds = [];
-    table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+    table.rows().every(function () {
         const rowNode = this.node();
         const isChecked = $(rowNode).find(".user-select").prop("checked");
         const isDisabled = $(rowNode).find(".user-select").prop("disabled");

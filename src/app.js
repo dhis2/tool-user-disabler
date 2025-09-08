@@ -30,7 +30,7 @@ const fetchAndDisplayUsers = async () => {
         }
 
         if (!includeDisabledUsers) {
-            filterCondition += `${filterCondition ? '&' : ''}&filter=disabled:eq:false`;
+            filterCondition += `${filterCondition ? "&" : ""}&filter=disabled:eq:false`;
         }
 
         // Fetch users based on inactive period and disabled status

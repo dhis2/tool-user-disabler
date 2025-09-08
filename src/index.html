@@ -9,7 +9,15 @@
 </head>
 
 <body>
+
     <div id="dhis-header-bar"></div>
+
+    <!-- Inactive User Job Status Section -->
+    <div id="inactive-user-job-section" class="job-section" style="margin-bottom: 20px; background: #f8f8f8; border-bottom: 1px solid #ddd; padding: 16px 12px 8px 12px;">
+        <div id="job-status-content">
+            <!-- Filled dynamically by JS -->
+        </div>
+    </div>
 
     <div class="mainView">
         <div class="filter-wrapper">
@@ -35,7 +43,7 @@
             <button id="applyFilterBtn" class="dhis2-button blue">Apply Filter</button>
         </div>
 
-        <table id="usersTable" class="display compact nowrap order-column">
+    <table id="usersTable" class="display compact nowrap order-column">
             <thead>
                 <tr>
                     <th><input type="checkbox" id="select-all"></th>
@@ -52,6 +60,26 @@
                 <!-- Filled dynamically by JS -->
             </tbody>
         </table>
+
+        <!-- Modal for creating a new DISABLE_INACTIVE_USERS job -->
+        <div id="createJobModal" class="modal">
+            <div class="modal-content">
+                <span class="close-create-job">&times;</span>
+                <h3>Create Disable Inactive Users Job</h3>
+                <form id="createJobForm">
+                    <label for="jobName">Name:</label>
+                    <input type="text" id="jobName" name="jobName" value="Disable inactive users" required><br>
+                    <label for="inactiveMonths">Inactive Months:</label>
+                    <input type="number" id="inactiveMonths" name="inactiveMonths" value="6" min="1" required><br>
+                    <label for="reminderDaysBefore">Reminder Days Before:</label>
+                    <input type="number" id="reminderDaysBefore" name="reminderDaysBefore" value="7" min="0" required><br>
+                    <label for="cronExpression">Cron Expression:</label>
+                    <input type="text" id="cronExpression" name="cronExpression" value="0 0 20 ? * *" required><br>
+                    <button type="submit" class="dhis2-button blue">Create Job</button>
+                </form>
+            </div>
+        </div>
+        
         <button id="bulkDisableBtn" class="dhis2-button red">Bulk Disable</button>
         <div id="user-modal" class="modal">
             <div class="modal-content">

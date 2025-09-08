@@ -1,3 +1,81 @@
+
+/* --- Inactive User Job Section Styles --- */
+.job-section {
+    margin-bottom: 20px;
+    background: #f8f8f8;
+    border-bottom: 1px solid #ddd;
+    padding: 16px 12px 8px 12px;
+    font-size: 16px;
+}
+
+
+/* Modern modal for create job */
+#createJobModal .modal-content {
+    max-width: 420px;
+    margin: 7% auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    padding: 32px 32px 24px 32px;
+    background: #fff;
+    border: none;
+    position: relative;
+}
+#createJobModal h3 {
+    margin-top: 0;
+    margin-bottom: 18px;
+    font-size: 1.3em;
+    color: #00796B;
+    text-align: center;
+}
+#createJobForm label {
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 4px;
+    font-weight: 500;
+    color: #333;
+}
+#createJobForm input[type="text"],
+#createJobForm input[type="number"] {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    border: 1.5px solid #b7b7b7;
+    border-radius: 7px;
+    font-size: 16px;
+    background: #f6f8fa;
+    box-sizing: border-box;
+    transition: border 0.2s, box-shadow 0.2s;
+    outline: none;
+    color: #222;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+#createJobForm input[type="text"]:focus,
+#createJobForm input[type="number"]:focus {
+    border: 1.5px solid #00796B;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,121,107,0.08);
+}
+#createJobForm button {
+    margin-top: 22px;
+    width: 100%;
+    padding: 10px 0;
+    font-size: 16px;
+    border-radius: 5px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+#createJobModal .close-create-job {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-size: 28px;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+#createJobModal .close-create-job:hover {
+    color: #00796B;
+}
 body {
         margin: 0;
     }

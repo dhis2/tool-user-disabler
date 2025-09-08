@@ -1,7 +1,7 @@
 {
   "name": "user-disabler",
   "description": "App to quickly find and disable inactive users.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "dependencies": {
     "datatables.net": "^2.3.3",
     "datatables.net-dt": "^2.3.3",

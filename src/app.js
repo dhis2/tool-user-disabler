@@ -4,7 +4,74 @@ import $ from "jquery";
 import "datatables.net";
 import "datatables.net-dt/css/dataTables.dataTables.css";
 
-import { d2Get, d2PutJson } from "./js/d2api";
+import { d2Get, d2PutJson, d2Patch } from "./js/d2api";
+
+// --- Inactive User Job Section Logic ---
+const JOB_TYPE = "DISABLE_INACTIVE_USERS";
+const JOB_API = `/api/jobConfigurations?fields=:owner&filter=jobType:eq:${JOB_TYPE}`;
+const SYSTEM_ID_API = "/api/system/id";
+
+async function renderInactiveUserJobSection() {
+    const section = document.getElementById("job-status-content");
+    section.innerHTML = '';
+    // Add description row
+    const desc = document.createElement("div");
+    desc.style.fontWeight = "bold";
+    desc.style.marginBottom = "6px";
+    desc.textContent = "Scheduled jobs to routinelydisable inactive users (users who have not logged in for a specified period).";
+    section.appendChild(desc);
+    // Add job status row
+    const statusDiv = document.createElement("div");
+    statusDiv.id = "job-status-row";
+    statusDiv.innerHTML = '<span>Loading job status...</span>';
+    section.appendChild(statusDiv);
+    try {
+        const jobsResp = await d2Get(JOB_API);
+        const jobs = jobsResp.jobConfigurations || [];
+        if (jobs.length === 0) {
+            statusDiv.innerHTML = `<span>No job to disable inactive users exists.</span> <button id="addJobBtn" class="dhis2-button blue">Add job</button>`;
+        } else if (jobs.length === 1) {
+            const job = jobs[0];
+            statusDiv.innerHTML = `
+                <span>Job name: <b>${job.name}</b> | Status: <b>${job.enabled ? "Enabled" : "Disabled"}</b></span>
+                <button id="toggleJobBtn" class="dhis2-button">${job.enabled ? "Disable" : "Enable"}</button>
+            `;
+        } else {
+            statusDiv.innerHTML = `<span style="color: #b00;">Several jobs to disable inactive users are configured, see more in the Scheduler app.</span>`;
+        }
+        setupJobSectionEventListeners(jobs);
+    } catch (e) {
+        statusDiv.innerHTML = `<span style="color: #b00;">Failed to load job status: ${e.message}</span>`;
+    }
+}
+
+function setupJobSectionEventListeners(jobs) {
+    const addBtn = document.getElementById("addJobBtn");
+    if (addBtn) {
+        addBtn.onclick = () => showCreateJobModal();
+    }
+    const toggleBtn = document.getElementById("toggleJobBtn");
+    if (toggleBtn && jobs.length === 1) {
+        toggleBtn.onclick = async () => {
+            const job = jobs[0];
+            try {
+                await d2Patch(`/api/jobConfigurations/${job.id}`, [
+                    { op: "replace", path: "/enabled", value: !job.enabled }
+                ]);
+                await renderInactiveUserJobSection();
+            } catch (e) {
+                alert("Failed to toggle job: " + e.message);
+            }
+        };
+    }
+}
+
+function showCreateJobModal() {
+    const modal = document.getElementById("createJobModal");
+    modal.style.display = "block";
+    document.querySelector(".close-create-job").onclick = () => { modal.style.display = "none"; };
+    window.onclick = (event) => { if (event.target === modal) modal.style.display = "none"; };
+}
 import { loadLegacyHeaderBarIfNeeded } from "./js/check-header-bar.js";
 loadLegacyHeaderBarIfNeeded();
 
@@ -15,7 +82,41 @@ let table;
 
 window.addEventListener("load", async () => {
     await fetchAndDisplayUsers();
+    await renderInactiveUserJobSection();
     setupEventListeners();
+});
+
+// Handle job creation form submit
+import { d2PostJson } from "./js/d2api";
+
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("createJobForm");
+    if (form) {
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            try {
+                const uidResp = await d2Get(SYSTEM_ID_API);
+                const uid = uidResp.codes[0];
+                const job = {
+                    id: uid,
+                    name: form.jobName.value,
+                    jobType: JOB_TYPE,
+                    schedulingType: "CRON",
+                    cronExpression: form.cronExpression.value,
+                    jobParameters: {
+                        inactiveMonths: parseInt(form.inactiveMonths.value, 10),
+                        reminderDaysBefore: parseInt(form.reminderDaysBefore.value, 10)
+                    },
+                    enabled: true
+                };
+                await d2PostJson(`/api/jobConfigurations`, job);
+                document.getElementById("createJobModal").style.display = "none";
+                await renderInactiveUserJobSection();
+            } catch (err) {
+                alert("Failed to create job: " + err.message);
+            }
+        };
+    }
 });
 
 const fetchAndDisplayUsers = async () => {

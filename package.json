@@ -1,5 +1,5 @@
 {
-  "name": "user-disabler",
+  "name": "bulk-user-disabler",
   "description": "App to quickly find and disable inactive users.",
   "version": "0.1.0",
   "dependencies": {
@@ -45,8 +45,7 @@
       "48": "img/icons/app_logo_48x48.png",
       "96": "img/icons/app_logo_96x96.png"
     },
-    "name": "User Disabler",
-    "version": "0.1.0",
+    "name": "Bulk User Disabler",
     "appType": "APP"
   }
 }

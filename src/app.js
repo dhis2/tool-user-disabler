@@ -5,9 +5,10 @@ import "datatables.net";
 import "datatables.net-dt/css/dataTables.dataTables.css";
 
 import { d2Get, d2PutJson } from "./js/d2api";
+import { loadLegacyHeaderBarIfNeeded } from "./js/check-header-bar.js";
+loadLegacyHeaderBarIfNeeded();
 
 //CSS
-import "./css/header.css";
 import "./css/style.css";
 
 let table;

@@ -1,3 +1,17 @@
+/* Force Choices.js multi-selects to be wide */
+.choices, .choices__inner {
+    min-width: 400px !important;
+    max-width: 900px !important;
+    width: 100% !important;
+    box-sizing: border-box;
+}
+#userRoleFilter,
+#userGroupFilter {
+    min-width: 0 !important;
+    max-width: none !important;
+    width: 100% !important;
+}
+
 
 /* --- Inactive User Job Section Styles --- */
 .job-section {

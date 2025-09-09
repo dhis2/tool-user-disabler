@@ -3,8 +3,13 @@ import moment from "moment";
 import $ from "jquery";
 import "datatables.net";
 import "datatables.net-dt/css/dataTables.dataTables.css";
+import Choices from "choices.js";
+import "choices.js/public/assets/styles/choices.min.css";
 
 import { d2Get, d2PutJson, d2Patch } from "./js/d2api";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./css/style.css";
 
 // --- Inactive User Job Section Logic ---
 const JOB_TYPE = "DISABLE_INACTIVE_USERS";
@@ -13,7 +18,7 @@ const SYSTEM_ID_API = "/api/system/id";
 
 async function renderInactiveUserJobSection() {
     const section = document.getElementById("job-status-content");
-    section.innerHTML = '';
+    section.innerHTML = "";
     // Add description row
     const desc = document.createElement("div");
     desc.style.fontWeight = "bold";
@@ -23,13 +28,13 @@ async function renderInactiveUserJobSection() {
     // Add job status row
     const statusDiv = document.createElement("div");
     statusDiv.id = "job-status-row";
-    statusDiv.innerHTML = '<span>Loading job status...</span>';
+    statusDiv.innerHTML = "<span>Loading job status...</span>";
     section.appendChild(statusDiv);
     try {
         const jobsResp = await d2Get(JOB_API);
         const jobs = jobsResp.jobConfigurations || [];
         if (jobs.length === 0) {
-            statusDiv.innerHTML = `<span>No job to disable inactive users exists.</span> <button id="addJobBtn" class="dhis2-button blue">Add job</button>`;
+            statusDiv.innerHTML = "<span>No job to disable inactive users exists.</span> <button id=\"addJobBtn\" class=\"dhis2-button blue\">Add job</button>";
         } else if (jobs.length === 1) {
             const job = jobs[0];
             statusDiv.innerHTML = `
@@ -37,7 +42,7 @@ async function renderInactiveUserJobSection() {
                 <button id="toggleJobBtn" class="dhis2-button">${job.enabled ? "Disable" : "Enable"}</button>
             `;
         } else {
-            statusDiv.innerHTML = `<span style="color: #b00;">Several jobs to disable inactive users are configured, see more in the Scheduler app.</span>`;
+            statusDiv.innerHTML = "<span style=\"color: #b00;\">Several jobs to disable inactive users are configured, see more in the Scheduler app.</span>";
         }
         setupJobSectionEventListeners(jobs);
     } catch (e) {
@@ -75,16 +80,49 @@ function showCreateJobModal() {
 import { loadLegacyHeaderBarIfNeeded } from "./js/check-header-bar.js";
 loadLegacyHeaderBarIfNeeded();
 
-//CSS
-import "./css/style.css";
 
 let table;
 
 window.addEventListener("load", async () => {
+    await populateRoleAndGroupFilters();
     await fetchAndDisplayUsers();
     await renderInactiveUserJobSection();
     setupEventListeners();
 });
+// Populate user role and group filters
+async function populateRoleAndGroupFilters() {
+    const [rolesResp, groupsResp] = await Promise.all([
+        d2Get("/api/userRoles?fields=name,id&paging=false"),
+        d2Get("/api/userGroups?fields=name,id&paging=false")
+    ]);
+    const roleSelect = document.getElementById("userRoleFilter");
+    const groupSelect = document.getElementById("userGroupFilter");
+    if (roleSelect) {
+        roleSelect.innerHTML = "";
+        rolesResp.userRoles.forEach(role => {
+            const opt = document.createElement("option");
+            opt.value = role.id;
+            opt.textContent = role.name;
+            roleSelect.appendChild(opt);
+        });
+    }
+    if (groupSelect) {
+        groupSelect.innerHTML = "";
+        groupsResp.userGroups.forEach(group => {
+            const opt = document.createElement("option");
+            opt.value = group.id;
+            opt.textContent = group.name;
+            groupSelect.appendChild(opt);
+        });
+    }
+    // Initialize Choices.js for both selects
+    if (roleSelect) {
+        new Choices(roleSelect, { removeItemButton: true, shouldSort: false, placeholder: true, placeholderValue: "Select user roles" });
+    }
+    if (groupSelect) {
+        new Choices(groupSelect, { removeItemButton: true, shouldSort: false, placeholder: true, placeholderValue: "Select user groups" });
+    }
+}
 
 // Handle job creation form submit
 import { d2PostJson } from "./js/d2api";
@@ -109,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     },
                     enabled: true
                 };
-                await d2PostJson(`/api/jobConfigurations`, job);
+                await d2PostJson("/api/jobConfigurations", job);
                 document.getElementById("createJobModal").style.display = "none";
                 await renderInactiveUserJobSection();
             } catch (err) {
@@ -125,33 +163,55 @@ const fetchAndDisplayUsers = async () => {
         const includeNeverLoggedIn = $("#includeNeverLoggedIn").is(":checked");
         const includeDisabledUsers = $("#includeDisabledUsers").is(":checked");
 
-        let filterCondition = "";
+        // Get selected roles and groups
+        const selectedRoles = Array.from(document.getElementById("userRoleFilter")?.selectedOptions || []).map(opt => opt.value);
+        const selectedGroups = Array.from(document.getElementById("userGroupFilter")?.selectedOptions || []).map(opt => opt.value);
 
+        let filters = [];
         if (inactiveDate) {
-            filterCondition += `lastLogin:lt:${inactiveDate}`;
+            filters.push(`lastLogin:lt:${inactiveDate}`);
         }
-
         if (!includeDisabledUsers) {
-            filterCondition += `${filterCondition ? "&" : ""}&filter=disabled:eq:false`;
+            filters.push("disabled:eq:false");
+        }
+        if (selectedRoles.length > 0) {
+            filters.push(`userRoles.id:in:[${selectedRoles.join(",")}]`);
+        }
+        if (selectedGroups.length > 0) {
+            filters.push(`userGroups.id:in:[${selectedGroups.join(",")}]`);
         }
 
-        // Fetch users based on inactive period and disabled status
-        const apiUrl = `/api/users.json?fields=id,username,firstName,surname,disabled,created,lastLogin&paging=false${filterCondition ? `&filter=${filterCondition}` : ""}`;
+        let filterString = filters.map(f => `filter=${encodeURIComponent(f)}`).join("&");
+        let apiUrl = `/api/users.json?fields=id,username,firstName,surname,disabled,created,lastLogin,userRoles[id],userGroups[id]&paging=false${filterString ? "&" + filterString : ""}`;
         const response = await d2Get(apiUrl);
 
         let users = response.users;
 
         // Fetch users who never logged in and merge with the existing users
         if (includeNeverLoggedIn) {
+            let neverLoggedInFilters = [];
+            neverLoggedInFilters.push("lastLogin:null");
             if (!includeDisabledUsers) {
-                filterCondition = "&filter=lastLogin:null&filter=disabled:eq:false";
+                neverLoggedInFilters.push("disabled:eq:false");
             }
-            else {
-                filterCondition = "&filter=lastLogin:null";
+            if (selectedRoles.length > 0) {
+                neverLoggedInFilters.push(`userRoles.id:in:[${selectedRoles.join(",")}]`);
             }
-            const neverLoggedInResponse = await d2Get("/api/users.json?fields=id,username,firstName,surname,disabled,created,lastLogin&paging=false" +  filterCondition);
+            if (selectedGroups.length > 0) {
+                neverLoggedInFilters.push(`userGroups.id:in:[${selectedGroups.join(",")}]`);
+            }
+            let neverLoggedInFilterString = neverLoggedInFilters.map(f => `filter=${encodeURIComponent(f)}`).join("&");
+            const neverLoggedInResponse = await d2Get(`/api/users.json?fields=id,username,firstName,surname,disabled,created,lastLogin,userRoles[id],userGroups[id]&paging=false&${neverLoggedInFilterString}`);
             users = users.concat(neverLoggedInResponse.users);
         }
+
+        // Remove duplicates (by id)
+        const seen = new Set();
+        users = users.filter(u => {
+            if (seen.has(u.id)) return false;
+            seen.add(u.id);
+            return true;
+        });
 
         populateUsersTable(users);
     } catch (error) {

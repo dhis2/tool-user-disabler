@@ -3,6 +3,8 @@
   "description": "App to quickly find and disable inactive users.",
   "version": "0.1.2",
   "dependencies": {
+    "bootstrap": "^5.3.8",
+    "choices.js": "^11.1.0",
     "datatables.net": "^2.3.3",
     "datatables.net-dt": "^2.3.3",
     "jquery": "^3.7.1",

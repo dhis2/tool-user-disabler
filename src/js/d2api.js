@@ -90,7 +90,7 @@ export const d2Patch = async (endpoint, body) => {
         console.log(error);
         throw error;
     }
-}
+};
 
 // POST to API async
 export const d2PostJson = async (endpoint, body) => {

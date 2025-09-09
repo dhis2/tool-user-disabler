@@ -3,9 +3,9 @@
 <html>
 
 <head>
+
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
     <title>User Disabler</title>
-
 </head>
 
 <body>
@@ -19,31 +19,55 @@
         </div>
     </div>
 
-    <div class="mainView">
-        <div class="filter-wrapper">
-            <label for="periodType">Period inactive</label>
-            <select id="periodType">
-                <option value="months">Months</option>
-                <option value="years">Years</option>
-                <option value="date">Since date</option>
-            </select>
+    <div class="mainView container-fluid px-4">
+        <form class="row g-3 align-items-end bg-light border rounded-3 p-3 mb-3" id="userFilterForm" autocomplete="off">
+            <div class="col-auto">
+                <label for="periodType" class="form-label mb-0">Period inactive</label>
+                <select id="periodType" class="form-select form-select-sm">
+                    <option value="months">Months</option>
+                    <option value="years">Years</option>
+                    <option value="date">Since date</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <label for="numPeriods" class="form-label mb-0">&nbsp;</label>
+                <input type="number" id="numPeriods" min="1" value="6" class="form-control form-control-sm">
+            </div>
+            <div class="col-auto">
+                <label for="specificDate" class="form-label mb-0">&nbsp;</label>
+                <input type="date" id="specificDate" class="form-control form-control-sm" style="display: none;">
+            </div>
+            <div class="col-auto">
+                                <label for="userRoleFilter" class="form-label mb-0">User Role</label>
+                                <div class="w-100" style="max-width:900px;">
+                                    <select id="userRoleFilter" multiple class="form-select form-select-sm w-100" style="min-width:400px;max-width:900px"></select>
+                                </div>
+            </div>
+            <div class="col-auto">
+                                <label for="userGroupFilter" class="form-label mb-0">User Group</label>
+                                <div class="w-100" style="max-width:900px;">
+                                    <select id="userGroupFilter" multiple class="form-select form-select-sm w-100" style="min-width:400px;max-width:900px"></select>
+                                </div>
+            </div>
+            <div class="w-100"></div>
+            <div class="col-auto">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="includeNeverLoggedIn">
+                    <label class="form-check-label" for="includeNeverLoggedIn">Include users who never logged in</label>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="includeDisabledUsers">
+                    <label class="form-check-label" for="includeDisabledUsers">Include already disabled users</label>
+                </div>
+            </div>
+            <div class="col-auto">
+                <button id="applyFilterBtn" class="btn btn-primary btn-sm">Apply Filter</button>
+            </div>
+        </form>
 
-            <input type="number" id="numPeriods" min="1" value="6" style="display: inline-block;">
-            <input type="date" id="specificDate" style="display: none;">
-
-            <label for="includeNeverLoggedIn">
-                <input type="checkbox" id="includeNeverLoggedIn"> Include users who never logged in
-            </label>
-
-            <label for="includeDisabledUsers">
-                <input type="checkbox" id="includeDisabledUsers"> Include already disabled users
-            </label>
-
-
-            <button id="applyFilterBtn" class="dhis2-button blue">Apply Filter</button>
-        </div>
-
-    <table id="usersTable" class="display compact nowrap order-column">
+    <table id="usersTable" class="table table-sm table-bordered table-hover align-middle">
             <thead>
                 <tr>
                     <th><input type="checkbox" id="select-all"></th>

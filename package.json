@@ -1,7 +1,7 @@
 {
   "name": "user-disabler",
   "description": "App to quickly find and disable inactive users.",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "dependencies": {
     "bootstrap": "^5.3.8",
     "choices.js": "^11.1.0",

@@ -356,8 +356,9 @@ const setupEventListeners = () => {
     if ($("#bulkDisableBtn")) { $("#bulkDisableBtn").click(showBulkDisableConfirmation); }
     if (confirmBulkDisableButton) { confirmBulkDisableButton.onclick = executeBulkDisable; }
     if ($("#applyFilterBtn")) {
-        $("#applyFilterBtn").click(() => {
-            applyFilter().then(updateBulkDisableButtonState); // Ensuring button state updates after filter application
+        $("#applyFilterBtn").click((event) => {
+            event.preventDefault(); // This prevents the form submission and page refresh
+            applyFilter().then(updateBulkDisableButtonState);
         });
     }
 
